@@ -1,5 +1,5 @@
-#Triple_logic package
-====================
+# Triple_logic package
+======================
 
 This package can be used to perform fine-grain circuit hardening in VHDL designs.
 
