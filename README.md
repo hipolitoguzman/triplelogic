@@ -14,17 +14,18 @@ to:
 
 The circuit element in question (port, signal, variable) will be tripled.
 
-For a more complete explanation of how the package works, you can read the
+For a more complete explanation of how the package works, you can read our
 paper describing the approach at: https://www.mdpi.com/2079-9292/8/1/24
 
 ## How to use it?
 
-Download the `triple_logic.vhd` file and include it in your project.
+Download the package file [src/triple_logic.vhd] and include it in your
+project.
 
 Identify the most critical ports, signals or variables in your design and
 change their datatype to their tripled counterparts.
 
-Remember to include the use clause `use work.triple_logic_package.all` in the
+Remember to include the use clause `use work.triple_logic_pkg.all` in the
 library sections of the VHDL sources that use these datatypes.
 
 Many functions and operators have been overloaded in the package, so the user
