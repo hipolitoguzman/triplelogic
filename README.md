@@ -19,7 +19,7 @@ paper describing the approach at: https://www.mdpi.com/2079-9292/8/1/24
 
 ## How to use it?
 
-Download the package file [src/triple_logic.vhd] and include it in your
+Download [the package file](src/triple_logic.vhd) and include it in your
 project.
 
 Identify the most critical ports, signals or variables in your design and
@@ -46,16 +46,18 @@ inserted changes did not break your design's intended functionality. An even
 better option would be to formally check the equivalence of the modified design
 with the original design.
 
+You can find some usage examples in the [examples](examples) folder.
+
 ## Disclaimer
 
-This is an academic work and no warranty is offered or implied (see LICENSE
-file).
+This is an academic work and no warranty is offered or implied (see
+[LICENSE](LICENSE) file).
 
 ## Acknowledgement
 
 This work was supported by the Spanish Ministerio de Economía y Competitividad,
 through the project “Diseño de sistemas digitales robustos frente a radiación
 mediante componentes y tecnologías comerciales” (RENASER3), project reference
-ESP2015-68245-C4-2-P. This work was also supported by the European
-Commission, through the project “VEGAS: Validation of European high capacity
-rad-hard FPGA and software tools”, project ID 687220
+ESP2015-68245-C4-2-P. This work was also supported by the European Commission,
+through the project “VEGAS: Validation of European high capacity rad-hard FPGA
+and software tools”, project ID 687220
