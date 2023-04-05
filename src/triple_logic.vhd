@@ -2,10 +2,10 @@ library IEEE;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+
 -----------------------------------------------------------
 --  Data and function declarations                       --
 -----------------------------------------------------------
-
 package triple_logic_pkg is
 
 -- 1. Datatype definitions
@@ -19,38 +19,9 @@ package triple_logic_pkg is
     c : std_logic;
   end record;
 
-  -- Different synthesizers may need different attributes, if the synthesizer
-  -- is removing your tripled elements please check its user's manual.
-  -- Sometimes you need to put these attributes in your design, since they
-  -- not be inherited from the datatype
-
-  attribute equivalent_register_removal                 : string;
-  attribute equivalent_register_removal of triple_logic : type is "no";
-  attribute equivalent_register_removal of triple_logic_vector : type is "no";
-  attribute equivalent_register_removal of triple_integer : type is "no";
-  attribute equivalent_register_removal of triple_signed : type is "no";
-  attribute equivalent_register_removal of triple_unsigned : type is "no";
-
-  attribute syn_keep                                    : string;
-  attribute syn_keep of triple_logic                    : type is "true";
-  attribute syn_keep of triple_logic_vector : type is "no";
-  attribute syn_keep of triple_integer : type is "no";
-  attribute syn_keep of triple_signed : type is "no";
-  attribute syn_keep of triple_unsigned : type is "no";
-
-  attribute syn_preserve                                : boolean;
-  attribute syn_preserve of triple_logic                : type is true;
-  attribute syn_preserve of triple_logic_vector : type is "no";
-  attribute syn_preserve of triple_integer : type is "no";
-  attribute syn_preserve of triple_signed : type is "no";
-  attribute syn_preserve of triple_unsigned : type is "no";
-
   -- 1.2 triple_logic_vector
 
   type triple_logic_vector is array (natural range <>) of triple_logic;
-
-  attribute equivalent_register_removal of triple_logic_vector : type is "no";
-  attribute syn_keep of triple_logic_vector                    : type is "true";
 
   -- 1.3 triple_integer
   --
@@ -70,6 +41,37 @@ package triple_logic_pkg is
 
   type triple_unsigned is array (natural range <>) of triple_logic;
 
+
+  -- 1.6 declare attributes
+  -- Different synthesizers may need different attributes, if the synthesizer
+  -- is removing your tripled elements please check its user's manual.
+  -- Sometimes you need to put these attributes in your design, since they
+  -- not be inherited from the datatype
+
+  attribute equivalent_register_removal                        : string;
+  attribute equivalent_register_removal of triple_logic        : type is "no";
+  attribute equivalent_register_removal of triple_logic_vector : type is "no";
+  attribute equivalent_register_removal of triple_integer      : type is "no";
+  attribute equivalent_register_removal of triple_signed       : type is "no";
+  attribute equivalent_register_removal of triple_unsigned     : type is "no";
+
+  attribute syn_keep                        : string;
+  attribute syn_keep of triple_logic        : type is "true";
+  attribute syn_keep of triple_logic_vector : type is "true";
+  attribute syn_keep of triple_integer      : type is "no";
+  attribute syn_keep of triple_signed       : type is "no";
+  attribute syn_keep of triple_unsigned     : type is "no";
+
+  attribute syn_preserve                        : boolean;
+  attribute syn_preserve of triple_logic        : type is true;
+  attribute syn_preserve of triple_logic_vector : type is false;
+  attribute syn_preserve of triple_integer      : type is false;
+  attribute syn_preserve of triple_signed       : type is false;
+  attribute syn_preserve of triple_unsigned     : type is false;
+
+
+
+
 -- 2. Domain crossing function declarations
 --
 -- triple() takes a single data and outputs a tripled data
@@ -78,22 +80,22 @@ package triple_logic_pkg is
 
   -- 2.1 Vote and triple for std_logic/triple_logic
 
-  function vote (triple : triple_logic) return std_logic;
+  function vote (triple   : triple_logic) return std_logic;
   function triple (single : std_logic) return triple_logic;
 
   -- 2.2 Vote and triple for std_logic_vector/triple_logic_vector
 
-  function vote (triple : triple_logic_vector) return std_logic_vector;
+  function vote (triple   : triple_logic_vector) return std_logic_vector;
   function triple (single : std_logic_vector) return triple_logic_vector;
 
   -- 2.3 Vote and triple for signed/triple_signed
 
-  function vote (triple : triple_signed) return signed;
+  function vote (triple   : triple_signed) return signed;
   function triple (single : signed) return triple_signed;
 
   -- 2.4 Vote and triple for unsigned/triple_unsigned
 
-  function vote (triple : triple_unsigned) return unsigned;
+  function vote (triple   : triple_unsigned) return unsigned;
   function triple (single : unsigned) return triple_unsigned;
 
   -- 2.5 Vote and triple for triple_integer
@@ -688,11 +690,10 @@ package triple_logic_pkg is
   function "/" (l : triple_integer; r : triple_integer) return integer;
   function "/" (l : triple_integer; r : triple_integer) return triple_integer;
 
--- Constant definition
-
-  constant TRIPLE_ZERO : triple_logic := triple('0');
-  constant TRIPLE_ONE  : triple_logic := triple('1');
-
+  -- declare deferred constants
+  constant TRIPLE_ZERO : triple_logic;
+  constant TRIPLE_ONE  : triple_logic;
+  
 end triple_logic_pkg;
 
 -----------------------------------------------------------
@@ -721,12 +722,20 @@ package body triple_logic_pkg is
     variable or_bc      : std_logic;
     variable ret        : std_logic;
   begin
-    and_result.a := triple.a and triple.b;
-    and_result.b := triple.b and triple.c;
-    and_result.c := triple.a and triple.c;
-    or_bc        := and_result.b or and_result.c;  -- We can't do "a OR b OR c" because it is ambiguous with the multiple overloaded ORs
-    ret          := and_result.a or or_bc;
+    --and_result.a := triple.a and triple.b;
+    --and_result.b := triple.b and triple.c;
+    --and_result.c := triple.a and triple.c;
+    --or_bc        := and_result.b or and_result.c;  -- We can't do "a OR b OR c" because it is ambiguous with the multiple overloaded ORs
+    --ret          := and_result.a or or_bc;    
+    --return ret;
+
+    if(triple.a = triple.b) then
+      ret := triple.a;
+    else
+      ret := triple.c;
+    end if;    
     return ret;
+    
   end function;
 
   function triple (single : std_logic) return triple_logic is
@@ -824,6 +833,12 @@ package body triple_logic_pkg is
     return ret;
   end function;
 
+
+  --  assign deferred constant the desired value, after functions have been elaborated
+  constant TRIPLE_ZERO : triple_logic := triple('0');
+  constant TRIPLE_ONE  : triple_logic := triple('1');
+
+
 -- 2. Overload logic operators:
 
   -- 2.1 AND-GATES:
@@ -912,6 +927,8 @@ package body triple_logic_pkg is
     ret.c := l.c and r.c;
     return ret;
   end function;
+
+
 
   -- AND gates for vector types:
 
